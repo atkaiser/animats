@@ -26,6 +26,6 @@ for i in range(variables.num_of_iterations):
     # Do it
     env.do_moves()
     # Print results
-    env.print_env()
+    env.print_env(i)
     
 print "Finished"

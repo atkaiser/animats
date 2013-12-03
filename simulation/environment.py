@@ -7,6 +7,7 @@ Created on Nov 9, 2013
 import random
 import math
 import variables
+import matplotlib.pyplot as plt
 
 class Environment:
 
@@ -61,9 +62,17 @@ class Environment:
         for o in self.objects:
             o.calculate_move()
             
-    def print_env(self):
+    def print_env(self, iteration_number):
+        x_vals = []
+        y_vals = []
         for c in self.cars:
-            print self.states[c]
+            state = self.states[c]
+            x_vals.append(state.x)
+            y_vals.append(state.y)
+            print state
+#        if ((iteration_number * variables.time_per_iteration) % 5.0 == 0):
+#            plt.plot(x_vals, y_vals, 'bo')
+#            plt.show()
             
 class State:
     
@@ -77,8 +86,8 @@ class State:
         self.goal_y = goal_y
         
     def __repr__(self):
-        print ["uid: " + str(self.uid), "x: " + str(self.x), "y: " + str(self.y), 
-               "vel: " + str(self.vel), "deg: " + str(self.deg), "goal x: " + str(self.goal_x), "goal y: " + str(self.goal_y)]
+        return str(["uid: " + str(self.uid), "x: " + str(self.x), "y: " + str(self.y), 
+               "vel: " + str(self.vel), "deg: " + str(self.deg), "goal x: " + str(self.goal_x), "goal y: " + str(self.goal_y)])
             
 def overlap(car1, state1, car2, state2):
     rect1 = find_corners(car1, state1)
@@ -145,7 +154,7 @@ def rect_inside(rect1, rect2):
             A = -1 * (edge[1][1] - edge[0][1])
             B = edge[1][0] - edge[0][0]
             C = -1 * (A * edge[0][0] + B * edge[0][1])
-            D = A * point[0] + B * edge[1] + C
+            D = A * point[0] + B * point[1] + C
             if D < 0:
                 inside = False
                 break

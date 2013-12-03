@@ -13,7 +13,7 @@ class Car:
     def __init__(self, width, height, hp, env):
         self.uid = Car.num_of_cars
         Car.num_of_cars += 1
-        Car.all_cars[self.id] = self
+        Car.all_cars[self.uid] = self
         self.width = width
         self.height = height
         self.motor = engine.Engine(hp)
