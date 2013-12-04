@@ -8,6 +8,7 @@ import random
 import math
 import variables
 import matplotlib.pyplot as plt
+from matplotlib import animation
 
 class Environment:
 
@@ -16,6 +17,7 @@ class Environment:
         self.cars = []
         self.objects = []
         self.states = {}
+        self.stored_states = {}
         
     def add_car(self, car, x=0, y=0, vel=0, deg=0, goal_x=0, goal_y=0, rand=True):
         self.cars.append(car)
@@ -27,9 +29,9 @@ class Environment:
             vel = 0
             goal_x = random.random()*1000
             goal_y = random.random()*1000
-            self.states[car] = State(car.uid,x,y,vel,deg,goal_x,goal_y)
+            self.states[car] = State(car.uid,x,y,vel,deg,goal_x,goal_y, random_color())
         else:
-            self.states[car] = State(car.uid,x,y,vel,deg,goal_x,goal_y)
+            self.states[car] = State(car.uid,x,y,vel,deg,goal_x,goal_y, random_color())
         
     def add_object(self, thing, x=None, y=None):
         self.objects.append(thing)
@@ -63,20 +65,54 @@ class Environment:
             o.calculate_move()
             
     def print_env(self, iteration_number):
-        x_vals = []
-        y_vals = []
         for c in self.cars:
-            state = self.states[c]
-            x_vals.append(state.x)
-            y_vals.append(state.y)
-            print state
-#        if ((iteration_number * variables.time_per_iteration) % 5.0 == 0):
-#            plt.plot(x_vals, y_vals, 'bo')
+            pass
+#            print state
+        if ((iteration_number * variables.time_per_iteration) % 1.0 == 0):
+            self.store_state()
+#            for c in self.cars:
+#                state = self.states[c]
+#                plt.plot([state.x], [state.y], 'o', color=state.color)
+#                plt.plot([state.goal_x], [state.goal_y], 'x', color=state.color)
 #            plt.show()
+
+    def store_state(self):
+        state = []
+        for c in self.cars:
+            car_state = self.states[c]
+            state.append((car_state.x, car_state.y, car_state.goal_x, car_state.goal_y, car_state.color))
+        self.stored_states[len(self.stored_states)] = state
+
+    def show_animation(self):
+        fig = plt.figure()
+        ax = plt.axes(xlim=(0, 1000), ylim=(0, 1000))
+        self.plots = []
+        for c in self.cars:
+            car, = ax.plot([], [], 'o', color=self.states[c].color)
+            dest, = ax.plot([], [], 'x', color=self.states[c].color)
+            self.plots += [car, dest]
+        
+        anim = animation.FuncAnimation(fig, self.animate, init_func=self.init, frames=len(self.stored_states), interval=20)
+        plt.show()
+        
+    def init(self):
+        for plot in self.plots:
+            plot.set_data([], [])
+        return tuple(self.plots)
+    
+    def animate(self, i):
+        stored_state = self.stored_states[i]
+        for i in range(len(stored_state)):
+            state = stored_state[i]
+            car_plot = self.plots[2*i]
+            dest_plot = self.plots[2*i + 1]
+            car_plot.set_data([state[0]], [state[1]])
+            dest_plot.set_data([state[2]], [state[3]])
+        return tuple(self.plots)
             
 class State:
     
-    def __init__(self, uid, x, y, vel, deg, goal_x, goal_y):
+    def __init__(self, uid, x, y, vel, deg, goal_x, goal_y, color):
         self.uid = uid
         self.x = x
         self.y = y
@@ -84,6 +120,7 @@ class State:
         self.deg = deg
         self.goal_x = goal_x
         self.goal_y = goal_y
+        self.color = color
         
     def __repr__(self):
         return str(["uid: " + str(self.uid), "x: " + str(self.x), "y: " + str(self.y), 
@@ -165,4 +202,9 @@ def rect_inside(rect1, rect2):
     else:
         return False
     
+def random_color():
+    r = random.random()
+    g = random.random()
+    b = random.random()
+    return (r,g,b)
     

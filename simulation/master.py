@@ -28,4 +28,7 @@ for i in range(variables.num_of_iterations):
     # Print results
     env.print_env(i)
     
+# Find way to show animation
+env.show_animation()
+    
 print "Finished"
