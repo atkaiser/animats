@@ -15,3 +15,6 @@ class Engine:
         Constructor
         '''
         self.hp = hp
+        
+    def max_accel(self):
+        return self.hp / 3

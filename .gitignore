@@ -1,0 +1,4 @@
+*.pyc
+networks/*
+*.swp
+*.prefs
